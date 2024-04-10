@@ -156,7 +156,7 @@ impl Default for DataFrameWriteOptions {
 /// ```
 #[derive(Debug, Clone)]
 pub struct DataFrame {
-    session_state: SessionState,
+    session_state: Box<SessionState>,
     plan: LogicalPlan,
 }
 
@@ -166,9 +166,9 @@ impl DataFrame {
     /// This is a low-level method and is not typically used by end users. See
     /// [`SessionContext::read_csv`] and other methods for creating a
     /// `DataFrame` from an existing datasource.
-    pub fn new(session_state: SessionState, plan: LogicalPlan) -> Self {
+    pub fn new(session_state: impl Into<Box<SessionState>>, plan: LogicalPlan) -> Self {
         Self {
-            session_state,
+            session_state: session_state.into(),
             plan,
         }
     }
@@ -867,7 +867,7 @@ impl DataFrame {
 
     /// Return a new [`TaskContext`] which would be used to execute this DataFrame
     pub fn task_ctx(&self) -> TaskContext {
-        TaskContext::from(&self.session_state)
+        TaskContext::from(self.session_state.as_ref())
     }
 
     /// Executes this DataFrame and returns a stream over a single partition
@@ -973,7 +973,7 @@ impl DataFrame {
 
     /// Returns both the [`LogicalPlan`] and [`SessionState`] that comprise this [`DataFrame`]
     pub fn into_parts(self) -> (SessionState, LogicalPlan) {
-        (self.session_state, self.plan)
+        (*self.session_state, self.plan)
     }
 
     /// Return the [`LogicalPlan`] represented by this DataFrame without running
@@ -1046,7 +1046,7 @@ impl DataFrame {
     /// # }
     /// ```
     pub fn registry(&self) -> &dyn FunctionRegistry {
-        &self.session_state
+        self.session_state.as_ref()
     }
 
     /// Calculate the intersection of two [`DataFrame`]s.  The two [`DataFrame`]s must have exactly the same schema
@@ -1405,7 +1405,7 @@ impl DataFrame {
     /// # }
     /// ```
     pub async fn cache(self) -> Result<DataFrame> {
-        let context = SessionContext::new_with_state(self.session_state.clone());
+        let context = SessionContext::new_with_state((*self.session_state).clone());
         // The schema is consistent with the output
         let plan = self.clone().create_physical_plan().await?;
         let schema = plan.schema();

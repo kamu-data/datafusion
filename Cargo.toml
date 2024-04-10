@@ -126,3 +126,6 @@ opt-level = 3
 overflow-checks = false
 panic = 'unwind'
 rpath = false
+
+[workspace.lints.clippy]
+large_futures = "warn"

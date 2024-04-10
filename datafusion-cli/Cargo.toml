@@ -29,6 +29,9 @@ repository = "https://github.com/apache/arrow-datafusion"
 rust-version = "1.73"
 readme = "README.md"
 
+[lints]
+workspace = true
+
 [dependencies]
 arrow = "51.0.0"
 async-trait = "0.1.41"

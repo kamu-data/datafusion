@@ -28,6 +28,8 @@ members = [
     "datafusion/datasource-json",
     "datafusion/datasource-parquet",
     "datafusion/core",
+    "datafusion/dylib",
+    "datafusion/facade",
     "datafusion/expr",
     "datafusion/expr-common",
     "datafusion/execution",
@@ -112,7 +114,9 @@ chrono = { version = "0.4.44", default-features = false }
 criterion = "0.8"
 ctor = "0.6.3"
 dashmap = "6.0.1"
-datafusion = { path = "datafusion/core", version = "53.1.0", default-features = false }
+datafusion = { path = "datafusion/facade", version = "53.1.0", default-features = false }
+datafusion-core = { path = "datafusion/core", version = "53.1.0", default-features = false }
+datafusion-dylib = { path = "datafusion/dylib", version = "53.1.0" }
 datafusion-catalog = { path = "datafusion/catalog", version = "53.1.0" }
 datafusion-catalog-listing = { path = "datafusion/catalog-listing", version = "53.1.0" }
 datafusion-common = { path = "datafusion/common", version = "53.1.0", default-features = false }
